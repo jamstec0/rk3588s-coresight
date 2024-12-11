@@ -1,0 +1,1059 @@
+
+# SPDX-License-Identifier：GPL-2.0-only または BSD-2-Clause
+YAML 1.2
+---
+id: http://devicetree.org/schemas/arm/arm,coresight-tmc.yaml#
+スキーマ：http://devicetree.org/meta-schemas/core.yaml#
+
+タイトルArm CoreSight トレース・メモリ・コントローラ
+
+メンテナ
+  - マチュー・ポワリエ <mathieu.poirier@linaro.org>
+  - マイク・リーチ <mike.leach@linaro.org>
+  - レオ・ヤン <leo.yan@linaro.org>
+  - スズキ Kプール <suzuki.poulose@arm.com>
+
+の説明を参照してください：|
+  CoreSightコンポーネントは、ARM CoreSightアーキテクチャに準拠しています。
+  仕様で、特定の用途に合わせてさまざまなトポロジーで接続できる。
+  SoCのトレースニーズこれらのトレースコンポーネントは、一般的に次のように分類されます。
+  シンク、リンク、ソース。1つまたは複数のソース・フローによって生成されたトレース・データ
+  ソースと現在選択されているソースを結ぶ中間リンクを経由して
+  シンク
+
+  トレースメモリコントローラは、組み込みトレースバッファ(ETB)、組み込みトレース
+  FIFO(ETF)およびEmbedded Trace Router(ETR)コンフィギュレーション。構成
+  モード(ETB, ETF, ETR)は、ブート時にデバイスがプローブされたときに発見される。
+
+# ここでカスタムセレクトが必要、もしくは'arm,primecell'が多くのノードでマッチしてしまう
+を選択する：
+  の特性を持つ：
+    互換性がある：
+      が含まれている：
+        const：アーム,コアサイト-TMC
+  が必要だ：
+    - 適合
+
+のすべてである：
+  - ref:/schemas/arm/primecell.yaml#。
+
+の特性を持つ：
+  互換性がある：
+    の項目がある：
+      - const：アーム,コアサイト-TMC
+      - const: アーム,プライムセル
+
+  REG：
+    maxItems：1
+
+  クロック：
+    minItems：1
+    maxItems：2
+
+  クロック名：
+    minItems：1
+    の項目がある：
+      - const: apb_pclk
+      - const: atclk
+
+  アイオムス
+    maxItems：1
+
+  パワードメイン
+    maxItems：1
+
+  アーム、バッファサイズ：
+    参照: /schemas/types.yaml#/definitions/uint32
+    非推奨: true
+    という記述がある：
+      TMC ETR (embedded trace router)の連続バッファ容量。その
+      の buffer_size プロパティで動的に設定できます。
+      代わりにsysfs。
+
+  腕、散らばる：
+    タイプ: boolean
+    という記述がある：
+      TMC-ETRがこのシステムでSGモードを安全に使用できることを示す。
+
+  アーム、最大バーストサイズ：
+    という記述がある：
+      AXI マスター インターフェイスで TMC が開始する最大バースト サイズ。これは
+      バーストサイズは[0..15]の範囲で設定可能で、この設定は1データ
+      バーストあたり最大16データ転送。
+    参照: /schemas/types.yaml#/definitions/uint32
+    最大：15
+
+  インポート
+    参照：/schemas/graph.yaml#/properties/ports
+    additionalProperties: false
+
+    の特性を持つ：
+      ポートだ：
+        説明を参照してください：CoreSight Traceバスからの入力接続。
+        参照: /schemas/graph.yaml#/properties/port
+
+  アウトポート
+    参照：/schemas/graph.yaml#/properties/ports
+    additionalProperties: false
+
+    の特性を持つ：
+      ポートだ：
+        説明を参照してください：AXI または ATB マスター出力接続。ETR に使用。
+          とETFのコンフィギュレーション。
+        参照: /schemas/graph.yaml#/properties/port
+
+が必要だ：
+  - 適合
+  - レジ
+  - クロック
+  - クロック名
+  - インポート
+
+unvaluatedProperties: false
+
+の例だ：
+  - |
+    etr@20070000
+        compatible = "arm,coresight-tmc", "arm,primecell"；
+        reg = <0x20070000 0x1000>；
+
+        clocks = <&oscclk6a>；
+        clock-names = "apb_pclk"；
+        インポート
+            ポート
+                etr_in_port: エンドポイント {.
+                    remote-endpoint = <&replicator2_out_port0>；
+                };
+            };
+        };
+
+        アウトポート
+            ポート
+                etr_out_port: エンドポイント {.
+                    リモート・エンドポイント = <&catu_in_port>；
+                };
+            };
+        };
+    };
+...
+
+# SPDX-License-Identifier：GPL-2.0 WITH Linux-syscall-note
+#
+# (C) COPYRIGHT 2022 ARM Limited.無断複写・転載を禁じます。
+#
+# このプログラムはフリーソフトウェアであり、以下の条件の下で提供されます。
+フリーソフトウェアによって発行された # GNU 一般公衆利用許諾契約書 バージョン2
+# 財団は、あなたによるこのプログラムのいかなる使用も、以下の条件に従うものとします。
+そのようなGNUライセンスの#。
+#
+# このプログラムは、役に立つことを願って配布しています、
+# しかし、いかなる保証もありません。
+# 商品性または特定目的への適合性。を参照してください。
+# 詳細はGNU General Public Licenseをご覧ください。
+#
+# あなたはGNU一般公衆利用許諾書のコピーを受け取っているはずです。
+# そうでない場合は、以下のサイトからオンラインでアクセスできます。
+# http://www.gnu.org/licenses/gpl-2.0.html.
+#
+#
+=====================================
+ARM CoreSight Maliソース統合
+=====================================
+
+詳細については、Documentation/trace/coresight/coresight.rstを参照してください。
+コアサイトについて
+
+このドキュメントでは、マリ固有のデビセツリーの統合について説明する。
+
+Sinkポートへの参照は例として示されている。シンクへのアクセスは特定
+を実装する必要があり、専用のカーネルモジュールが必要になる。
+
+ARM Coresight MaliソースITM
+=============================
+
+必須プロパティ
+-------------------
+
+- 互換性があります："arm,coresight-mali-source-itm "でなければならない。
+- gpu : Mali GPU定義へのファンドル
+- ポートだ：
+  - エンドポイントである：
+    - リモート・エンドポイント：Coresightシンク・ポートへのファンドル
+
+例
+-------
+
+マリソースイットム
+  compatible = "arm,coresight-mali-source-itm"；
+  gpu = <&gpu>；
+  ポート
+    mali_source_itm_out_port0: エンドポイント {.
+      remote-endpoint = <&mali_sink_in_port0>；
+    };
+  };
+};
+
+ARM Coresight MaliソースETM
+=============================
+
+必須プロパティ
+-------------------
+
+- 互換性があります："arm,coresight-mali-source-etm "でなければならない。
+- gpu : Mali GPU定義へのファンドル
+- ポートだ：
+  - エンドポイントである：
+    - リモート・エンドポイント：Coresightシンク・ポートへのファンドル
+
+例
+-------
+
+マリソース
+  compatible = "arm,coresight-mali-source-etm"；
+  gpu = <&gpu>；
+  ポート
+    mali_source_etm_out_port0: エンドポイント {.
+      remote-endpoint = <&mali_sink_in_port1>；
+    };
+  };
+};
+
+ARM Coresight MaliソースELA
+=============================
+
+必須プロパティ
+-------------------
+
+- 互換性があります："arm,coresight-mali-source-ela "でなければならない。
+- gpu : Mali GPU定義へのファンドル
+- シグナルグループ：0から5までのシグナルグループ。
+                 信号チャンネルの設定に使用。
+  - sgN：1つのチャンネルに接続されている信号の種類。
+         の場合、複数のタイプになることもある。
+         JCNリクエスト/レスポンス。
+
+         種類だ：
+           - "jcn-request"：jcn-response" とチャネルを共有できる。
+           - "jcn-response"："jcn-request "とチャネルを共有できる。
+           - "ceu-execution"：他のタイプとチャンネルを共有できない
+           - "ceu-commands"：他のタイプとチャンネルを共有できない
+           - "mcu-ahbp"：他のタイプとチャネルを共有できない
+           - "host-axi"：他のタイプとチャンネルを共有できない
+
+
+         HW実装が共通チャンネルを共有する場合
+         JCNのレスポンスとリクエスト用（合計4チャンネル）、
+         参照：
+           - "例共有JCNリクエスト/レスポンスチャネル"
+         それ以外のチャンネル（合計5チャンネル）については、以下を参照のこと：
+           - "例JCNリクエスト/レスポンス・チャネルの分割"
+- ポートだ：
+  - エンドポイントである：
+    - リモート・エンドポイント：Coresightシンク・ポートへのファンドル
+
+例JCNリクエスト/レスポンスチャネルの分割
+--------------------------------------------
+
+この例は、合計5つの信号グループを持つ実装に適用される、
+ここで、JCNのリクエストとレスポンスは独立したチャンネルに割り当てられている。
+
+マリソースエラ
+  compatible = "arm,coresight-mali-source-ela"；
+  gpu = <&gpu>；
+  シグナルグループ
+    sg0 = "jcn-request"；
+    sg1 = "jcn-response"；
+    sg2 = "ceu-execution"；
+    sg3 = "ceu-commands"；
+    sg4＝「mcu-ahbp」；
+    sg5＝「ホスト・アクシ」；
+  };
+  ポート
+    mali_source_ela_out_port0: エンドポイント {.
+      remote-endpoint = <&mali_sink_in_port2>；
+    };
+  };
+};
+
+例共有JCNリクエスト/レスポンスチャネル
+--------------------------------------------
+
+この例は、合計4つの信号グループを持つ実装に適用される、
+ここで、JCNリクエストとレスポンスは同じチャネルに割り当てられる。
+
+マリソースエラ
+  compatible = "arm,coresight-mali-source-ela"；
+  gpu = <&gpu>；
+  シグナルグループ
+    sg0 = "jcn-request", "jcn-response"；
+    sg1 = "ceu-execution"；
+    sg2 = "ceu-commands"；
+    sg3 = "mcu-ahbp"；
+    sg4 = "host-axi"；
+  };
+  ポート
+    mali_source_ela_out_port0: エンドポイント {.
+      remote-endpoint = <&mali_sink_in_port1>；
+    };
+  };
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# SPDX-License-Identifier：GPL-2.0
+YAML 1.2
+---
+id: http://devicetree.org/schemas/arm/rockchip.yaml#
+スキーマ：http://devicetree.org/meta-schemas/core.yaml#
+
+タイトルロックチップ・プラットフォーム
+
+メンテナ
+  - ハイコ・ステューブナー <heiko@sntech.de>
+
+プロパティー
+  ノード名：
+    const: '/'
+  互換性がある：
+    の一つ：
+
+      - 商品概要: 96boards RK3399 Ficus (ROCK960 Enterprise Edition)
+        の項目がある：
+          - const：バムルス,フィカス
+          - コンスト：ロックチップ,RK3399
+
+      - 商品概要: 96boards RK3399 Rock960 (ROCK960 Consumer Edition)
+        の項目がある：
+          - const：バムルス,ロック960
+          - コンスト：ロックチップ,RK3399
+
+      - 説明アマルーラ・ヴィヤーサ RK3288
+        の項目がある：
+          - const：アマルーラ、ビャーサ-RK3288
+          - コンスト：ロックチップ,RK3288
+
+      - 説明アンバーニックRG353P
+        の項目がある：
+          - const：アンベルニック,RG353P
+          - コンスト：ロックチップ、RK3566
+
+      - 説明アンバーニックRG503
+        の項目がある：
+          - const：アンベルニック,RG503
+          - コンスト：ロックチップ、RK3566
+
+      - 説明Asus Tinkerボード
+        の項目がある：
+          - const：Asus,RK3288-ティンカー
+          - コンスト：ロックチップ,RK3288
+
+      - 説明Asus Tinker ボード S
+        の項目がある：
+          - const：ASSUS,RK3288-ティンカー-S
+          - コンスト：ロックチップ,RK3288
+
+      - 説明ビーリンクA1
+        の項目がある：
+          - const: azw,beelink-a1
+          - コンスト：ロックチップ、RK3328
+
+      - 商品詳細: BQキュリー2タブレット
+        の項目がある：
+          - const: ムンドリーダー,bq-キュリー2
+          - コンスト：ロックチップ、RK3066A
+
+      - 商品詳細: bq Edison 2 クアッドコア・タブレット
+        の項目がある：
+          - const：ムンドリーダー,BQ-EDISON2QC
+          - コンスト：ロックチップ,RK3188
+
+      - 説明チップスパーク ポップメタル-RK3288
+        の項目がある：
+          - const：チップスパーク、ポップメタル-RK3288
+          - コンスト：ロックチップ,RK3288
+
+      - 説明チップスパーク レイジャーPX2
+        の項目がある：
+          - const：チップスパーク、レイジャー-PX2
+          - コンスト：ロックチップ、RK3066A
+
+      - 説明エルジン RV1108 R1
+        の項目がある：
+          - コンスト：エルジン,RV1108-R1
+          - コンスト：ロックチップ,RV1108
+
+      - 説明エンギカム PX30.Core C.TOUCH 2.0
+        の項目がある：
+          - const：エンギカム,px30-core-ctouch2
+          - const：エンギカム、px30-コア
+          - コンスト：ロックチップ、PX30
+
+      - 説明Engicam PX30.Core C.TOUCH 2.0 10.1インチオープンフレーム
+        の項目がある：
+          - const：エンギカム,px30-core-ctouch2-of10
+          - const：エンギカム、px30-コア
+          - コンスト：ロックチップ、PX30
+
+      - 説明エンギカムPX30.Core EDIMM2.2スターターキット
+        の項目がある：
+          - const：エンギカム、px30-core-edimm2.2
+          - const：エンギカム、px30-コア
+          - コンスト：ロックチップ、PX30
+
+      - 説明ホタル-RK3288
+        の項目がある：
+          - を列挙する：
+              - ホタル、ホタル-RK3288
+              - ホタル,ホタル-RK3288-ベータ
+          - コンスト：ロックチップ,RK3288
+
+      - 説明ファイアフライ Firefly-RK3288 リロード
+        の項目がある：
+          - const: ホタル,ホタル-RK3288-リロード
+          - コンスト：ロックチップ,RK3288
+
+      - 説明ホタル Firefly-RK3399
+        の項目がある：
+          - const：ホタル,ホタル-RK3399
+          - コンスト：ロックチップ,RK3399
+
+      - 説明ホタル ROC-RK3308-CC
+        の項目がある：
+          - コンスト：ホタル、RC-RK3308-CC
+          - コンスト：ロックチップ、RK3308
+
+      - 説明ホタルRC-RK3328-cc
+        の項目がある：
+          - コンスト：ホタル、RC-RK3328-CC
+          - コンスト：ロックチップ、RK3328
+
+      - 説明ホタル ROC-RK3328-PC
+        の項目がある：
+          - コンスト：ホタル、RC-RK3328-PC
+          - コンスト：ロックチップ、RK3328
+
+      - 説明ホタル ROC-RK3399-PC
+        の項目がある：
+          - を列挙する：
+              - ホタル、RC-RK3399-PC
+              - ホタル、RC-RK3399-PC-メザニン
+          - コンスト：ロックチップ,RK3399
+
+      - 説明ホタル ROC-RK3399-PC-PLUS
+        の項目がある：
+          - を列挙する：
+              - ホタル、RC-RK3399-PC-プラス
+          - コンスト：ロックチップ,RK3399
+
+      - 説明ホタルステーションM2
+        の項目がある：
+          - コンスト：ホタル、RK3566-RC-PC
+          - コンスト：ロックチップ、RK3566
+
+      - 説明FriendlyElec NanoPi R2S
+        の項目がある：
+          - const：フレンドリーアーム,ナノピ-R2S
+          - コンスト：ロックチップ、RK3328
+
+      - 説明FriendlyElec NanoPi4シリーズボード
+        の項目がある：
+          - を列挙する：
+              - フレンドリーアーム、ナノPC-T4
+              - フレンドリーアーム、ナノピ-M4
+              - フレンドリーアーム、ナノピ-M4B
+              - フレンドリーアーム、ナノピ・ネオ4
+              - フレンドリーアーム、ナノピ-R4S
+              - フレンドリーアーム、ナノピ-R4S-エンタープライズ
+          - コンスト：ロックチップ,RK3399
+
+      - 説明GeekBuyingのGeekBox
+        の項目がある：
+          - const: ギークバイイング,ギークボックス
+          - コンスト：ロックチップ、RK3368
+
+      - 説明グーグル ボブ (Asus Chromebook Flip C101PA)
+        の項目がある：
+          - const：グーグル,ボブ-rev13
+          - const：グーグル,ボブ-rev12
+          - const：グーグル,ボブ-rev11
+          - const：グーグル,ボブ-rev10
+          - const：グーグル,bob-rev9
+          - const：グーグル,ボブ-rev8
+          - const：グーグル,bob-rev7
+          - const：グーグル,bob-rev6
+          - const：グーグル,bob-rev5
+          - const：グーグル,bob-rev4
+          - const：グーグル,ボブ
+          - const：グーグル,グルー
+          - コンスト：ロックチップ,RK3399
+
+      - 説明グーグル・ブレイン (開発ボード)
+        の項目がある：
+          - const：グーグル,ヴェイロン・ブレーン-rev0
+          - const：グーグル,ヴェイロン・ブレーン
+          - const：グーグル,ヴェイロン
+          - コンスト：ロックチップ,RK3288
+
+      - 説明Google Fievel (AOPEN Chromebox Mini)
+        の項目がある：
+          - const：グーグル,ヴェイロン-フィーヴェル-rev8
+          - const：グーグル,ヴェイロン-フィーヴェル-rev7
+          - const：グーグル,ヴェイロン-フィーヴェル-rev6
+          - const：グーグル,ヴェイロン-フィーヴェル-rev5
+          - const：グーグル,ヴェイロン-フィーヴェル-rev4
+          - const：グーグル,ヴェイロン-フィーヴェル-rev3
+          - const：グーグル,ヴェイロン-フィーヴェル-rev2
+          - const：グーグル,ヴェイロン-フィーヴェル-rev1
+          - const：グーグル,ヴェイロン-フィーヴェル-rev0
+          - const：グーグル,ヴェイロン-フィーヴェル
+          - const：グーグル,ヴェイロン
+          - コンスト：ロックチップ,RK3288
+
+      - 説明グーグル・グルー (開発ボード)
+        の項目がある：
+          - const：グーグル,gru-rev15
+          - const：グーグル,gru-rev14
+          - const：グーグル,gru-rev13
+          - const：グーグル,gru-rev12
+          - const：グーグル,gru-rev11
+          - const：グーグル,gru-rev10
+          - const：グーグル,gru-rev9
+          - const：グーグル,gru-rev8
+          - const：グーグル,gru-rev7
+          - const：グーグル,gru-rev6
+          - const：グーグル,gru-rev5
+          - const：グーグル,gru-rev4
+          - const：グーグル,gru-rev3
+          - const：グーグル,gru-rev2
+          - const：グーグル,グルー
+          - コンスト：ロックチップ,RK3399
+
+      - 説明Google Jaq (Haier Chromebook 11 など、uSD付き)
+        の項目がある：
+          - const：グーグル,ヴェイロン・ジャック-rev5
+          - const：グーグル,ヴェイロン・ジャック-rev4
+          - const：グーグル,ヴェイロン・ジャック-rev3
+          - const：グーグル,ヴェイロン・ジャック-rev2
+          - const：グーグル,ヴェイロン・ジャック-rev1
+          - const：グーグル,ヴェイロン・ジャック
+          - const：グーグル,ヴェイロン
+          - コンスト：ロックチップ,RK3288
+
+      - 説明グーグルジェリー (ハイセンス Chromebook C11 など)
+        の項目がある：
+          - const：グーグル,ヴェイロン・ジェリー-rev15
+          - const：グーグル,ヴェイロン・ジェリー-rev14
+          - const：グーグル,ヴェイロン・ジェリー-rev13
+          - const：グーグル,ヴェイロン・ジェリー-rev12
+          - const：グーグル,ヴェイロン・ジェリー-rev11
+          - const：グーグル,ヴェイロン・ジェリー-rev10
+          - const：グーグル,ヴェイロン・ジェリー-rev7
+          - const：グーグル,ヴェイロン・ジェリー-rev6
+          - const：グーグル,ヴェイロン・ジェリー-rev5
+          - const：グーグル,ヴェイロン・ジェリー-rev4
+          - const：グーグル,ヴェイロン・ジェリー-rev3
+          - const：グーグル,ヴェイロン・ジェリー
+          - const：グーグル,ヴェイロン
+          - コンスト：ロックチップ,RK3288
+
+      - 説明グーグルケビン（サムスンクロームブックプラス）
+        の項目がある：
+          - const：グーグル,ケビン-rev15
+          - const：グーグル,ケビン-rev14
+          - const：グーグル,ケビン-rev13
+          - const：グーグル,ケビン-rev12
+          - const：グーグル,ケビン-rev11
+          - const：グーグル,ケビン-rev10
+          - const：グーグル,ケビン-rev9
+          - const：グーグル,ケビン-rev8
+          - const：グーグル,ケビン・レヴュー7
+          - const：グーグル,ケビン-rev6
+          - const：グーグル,ケビン
+          - const：グーグル,グルー
+          - コンスト：ロックチップ,RK3399
+
+      - 説明グーグルミッキー（Asus Chromebit CS10）
+        の項目がある：
+          - const：グーグル,ヴェイロン-ミッキー-rev8
+          - const：グーグル,ヴェイロン-ミッキー-rev7
+          - const：グーグル,ヴェイロン-ミッキー-rev6
+          - const：グーグル,ヴェイロン-ミッキー-rev5
+          - const：グーグル,ヴェイロン-ミッキー-rev4
+          - const：グーグル,ヴェイロン-ミッキー-rev3
+          - const：グーグル,ヴェイロン-ミッキー-rev2
+          - const：グーグル,ヴェイロン-ミッキー-rev1
+          - const：グーグル,ヴェイロン-ミッキー-rev0
+          - const：グーグル,ヴェイロン＝ミッキー
+          - const：グーグル,ヴェイロン
+          - コンスト：ロックチップ,RK3288
+
+      - 説明Google Mighty (Haier Chromebook 11 など、SD付き)
+        の項目がある：
+          - const：グーグル,ヴェイロン・マイティ-rev5
+          - const：グーグル,ヴェイロン・マイティ-rev4
+          - const：グーグル,ヴェイロン・マイティ-rev3
+          - const：グーグル,ヴェイロン・マイティ-rev2
+          - const：グーグル,ヴェイロン・マイティ-rev1
+          - const：グーグル,ヴェイロン・マイティ
+          - const：グーグル,ヴェイロン
+          - コンスト：ロックチップ,RK3288
+
+      - 説明グーグルミニー（Asus Chromebook Flip C100P）
+        の項目がある：
+          - const：グーグル,ヴェイロン-ミニー-rev4
+          - const：グーグル,ヴェイロン-ミニー-rev3
+          - const：グーグル,ヴェイロン-ミニー-rev2
+          - const：グーグル,ヴェイロン-ミニー-rev1
+          - const：グーグル,ヴェイロン-ミニー-rev0
+          - const：グーグル,ヴェイロン＝ミニー
+          - const：グーグル,ヴェイロン
+          - コンスト：ロックチップ,RK3288
+
+      - 説明グーグル ピンキー (開発ボード)
+        の項目がある：
+          - const：グーグル,ヴェイロン-ピンキー-rev2
+          - const：グーグル,ヴェイロン-ピンキー
+          - const：グーグル,ヴェイロン
+          - コンスト：ロックチップ,RK3288
+
+      - 説明Google Scarlet - Dumo (ASUS Chromebook Tablet CT100)
+        の項目がある：
+          - const：グーグル,スカーレット-rev15-sku0
+          - const：グーグル,スカーレット-rev15
+          - const：グーグル,スカーレット-rev14-sku0
+          - const：グーグル,スカーレット-rev14
+          - const：グーグル,スカーレット-rev13-sku0
+          - const：グーグル,スカーレット-rev13
+          - const：グーグル,スカーレット-rev12-sku0
+          - const：グーグル,スカーレット-rev12
+          - const：グーグル,スカーレット-rev11-sku0
+          - const：グーグル,スカーレット-rev11
+          - const：グーグル,スカーレット-rev10-sku0
+          - const：グーグル,スカーレット-rev10
+          - const：グーグル,スカーレット-rev9-sku0
+          - const：グーグル,スカーレット-rev9
+          - const：グーグル,スカーレット-rev8-sku0
+          - const：グーグル,スカーレット-rev8
+          - const：グーグル,スカーレット-rev7-sku0
+          - const：グーグル,スカーレット-rev7
+          - const：グーグル,スカーレット-rev6-sku0
+          - const：グーグル,スカーレット-rev6
+          - const：グーグル,スカーレット-rev5-sku0
+          - const：グーグル,スカーレット-rev5
+          - const：グーグル,スカーレット
+          - const：グーグル,グルー
+          - コンスト：ロックチップ,RK3399
+
+      - 説明Google Scarlet - キングディスプレイ (Acer Chromebook Tab 10)
+        の項目がある：
+          - const：グーグル,スカーレット-rev15-sku7
+          - const：グーグル,スカーレット-rev15
+          - const：グーグル,スカーレット-rev14-sku7
+          - const：グーグル,スカーレット-rev14
+          - const：グーグル,スカーレット-rev13-sku7
+          - const：グーグル,スカーレット-rev13
+          - const：グーグル,スカーレット-rev12-sku7
+          - const：グーグル,スカーレット-rev12
+          - const：グーグル,スカーレット-rev11-sku7
+          - const：グーグル,スカーレット-rev11
+          - const：グーグル,スカーレット-rev10-sku7
+          - const：グーグル,スカーレット-rev10
+          - const：グーグル,スカーレット-rev9-sku7
+          - const：グーグル,スカーレット-rev9
+          - const：グーグル,スカーレット-rev8-sku7
+          - const：グーグル,スカーレット-rev8
+          - const：グーグル,スカーレット-rev7-sku7
+          - const：グーグル,スカーレット-rev7
+          - const：グーグル,スカーレット-rev6-sku7
+          - const：グーグル,スカーレット-rev6
+          - const：グーグル,スカーレット-rev5-sku7
+          - const：グーグル,スカーレット-rev5
+          - const：グーグル,スカーレット-rev4-sku7
+          - const：グーグル,スカーレット-rev4
+          - const：グーグル,スカーレット-rev3-sku7
+          - const：グーグル,スカーレット-rev3
+          - const：グーグル,スカーレット
+          - const：グーグル,グルー
+          - コンスト：ロックチップ,RK3399
+
+      - の説明を参照してください：|
+          Google Scarlet - Innoluxディスプレイ（Acer Chromebook Tab 10など）
+        の項目がある：
+          - const：グーグル,スカーレット-rev15-sku2
+          - const：グーグル,スカーレット-rev15-sku4
+          - const：グーグル,スカーレット-rev15-sku6
+          - const：グーグル,スカーレット-rev15
+          - const：グーグル,スカーレット-rev14-sku2
+          - const：グーグル,スカーレット-rev14-sku4
+          - const：グーグル,スカーレット-rev14-sku6
+          - const：グーグル,スカーレット-rev14
+          - const：グーグル,スカーレット-rev13-sku2
+          - const：グーグル,スカーレット-rev13-sku4
+          - const：グーグル,スカーレット-rev13-sku6
+          - const：グーグル,スカーレット-rev13
+          - const：グーグル,スカーレット-rev12-sku2
+          - const：グーグル,スカーレット-rev12-sku4
+          - const：グーグル,スカーレット-rev12-sku6
+          - const：グーグル,スカーレット-rev12
+          - const：グーグル,スカーレット-rev11-sku2
+          - const：グーグル,スカーレット-rev11-sku4
+          - const：グーグル,スカーレット-rev11-sku6
+          - const：グーグル,スカーレット-rev11
+          - const：グーグル,スカーレット-rev10-sku2
+          - const：グーグル,スカーレット-rev10-sku4
+          - const：グーグル,スカーレット-rev10-sku6
+          - const：グーグル,スカーレット-rev10
+          - const：グーグル,スカーレット-rev9-sku2
+          - const：グーグル,スカーレット-rev9-sku4
+          - const：グーグル,スカーレット-rev9-sku6
+          - const：グーグル,スカーレット-rev9
+          - const：グーグル,スカーレット-rev8-sku2
+          - const：グーグル,スカーレット-rev8-sku4
+          - const：グーグル,スカーレット-rev8-sku6
+          - const：グーグル,スカーレット-rev8
+          - const：グーグル,スカーレット-rev7-sku2
+          - const：グーグル,スカーレット-rev7-sku4
+          - const：グーグル,スカーレット-rev7-sku6
+          - const：グーグル,スカーレット-rev7
+          - const：グーグル,スカーレット-rev6-sku2
+          - const：グーグル,スカーレット-rev6-sku4
+          - const：グーグル,スカーレット-rev6-sku6
+          - const：グーグル,スカーレット-rev6
+          - const：グーグル,スカーレット-rev5-sku2
+          - const：グーグル,スカーレット-rev5-sku4
+          - const：グーグル,スカーレット-rev5-sku6
+          - const：グーグル,スカーレット-rev5
+          - const：グーグル,スカーレット-rev4-sku2
+          - const：グーグル,スカーレット-rev4-sku4
+          - const：グーグル,スカーレット-rev4-sku6
+          - const：グーグル,スカーレット-rev4
+          - const：グーグル,スカーレット
+          - const：グーグル,グルー
+          - コンスト：ロックチップ,RK3399
+
+      - 説明Google Speedy (Asus C201 Chromebook)
+        の項目がある：
+          - const：グーグル,ヴェイロンスピード-rev9
+          - const：グーグル,ヴェイロンスピード-rev8
+          - const：グーグル,ヴェイロン-スピーディ-rev7
+          - const：グーグル,ヴェイロン-スピーディ-rev6
+          - const：グーグル,ヴェイロンスピード-rev5
+          - const：グーグル,ヴェイロン-スピーディ-rev4
+          - const：グーグル,ヴェイロン-スピーディ-rev3
+          - const：グーグル,ヴェイロン・スピーディ-rev2
+          - const：グーグル,ヴェイロン・スピーディ
+          - const：グーグル,ヴェイロン
+          - コンスト：ロックチップ,RK3288
+
+      - 説明Google Tiger (AOpen Chromebase Mini)
+        の項目がある：
+          - const：グーグル,ヴェイロン・タイガー-rev8
+          - const：グーグル,ヴェイロン・タイガー-rev7
+          - const：グーグル,ヴェイロン・タイガー-rev6
+          - const：グーグル,ヴェイロン・タイガー-rev5
+          - const：グーグル,ヴェイロン・タイガー-rev4
+          - const：グーグル,ヴェイロン・タイガー-rev3
+          - const：グーグル,ヴェイロン・タイガー-rev2
+          - const：グーグル,ヴェイロン・タイガー-rev1
+          - const：グーグル,ヴェイロン・タイガー-rev0
+          - const：グーグル,ヴェイロン・タイガー
+          - const：グーグル,ヴェイロン
+          - コンスト：ロックチップ,RK3288
+
+      - 説明Haoyu MarsBoard RK3066
+        の項目がある：
+          - const：ハオユー,マーズボード-RK3066
+          - コンスト：ロックチップ、RK3066A
+
+      - 説明ハードカーネル オドロイド ゴー アドバンス
+        の項目がある：
+          - const: ハードカーネル,rk3326-odroid-go2
+          - コンスト：ロックチップ、RK3326
+
+      - 説明Hugsun X99 TVボックス
+        の項目がある：
+          - const：ハグサン,x99
+          - コンスト：ロックチップ,RK3399
+
+      - 説明カダスエッジシリーズのボード
+        の項目がある：
+          - を列挙する：
+              - カダス、エッジ
+              - カダス、エッジキャプテン
+              - カダス、エッジ-V
+          - コンスト：ロックチップ,RK3399
+
+      - 説明コボル・ヘリオス64
+        の項目がある：
+          - const：コボル,ヘリオス64
+          - コンスト：ロックチップ,RK3399
+
+      - 説明メサーエクストリームミニS6
+        の項目がある：
+          - コンスト：メサー、XMS6
+          - コンスト：ロックチップ,RK3229
+
+      - 説明リーズ RK3399 P710
+        の項目がある：
+          - コンスト：リーズ,P710
+          - コンスト：ロックチップ,RK3399
+
+      - 商品概要: mqmaker MiQi
+        の項目がある：
+          - const: mqmaker,miqi
+          - コンスト：ロックチップ,RK3288
+
+      - 説明Netxeon R89ボード
+        の項目がある：
+          - const：ネットゼオン,R89
+          - コンスト：ロックチップ,RK3288
+
+      - 説明オープンAIラボ EAIDK-610
+        の項目がある：
+          - const：オープンエイラブ、EAIDK-610
+          - コンスト：ロックチップ,RK3399
+
+      - 説明オレンジパイRK3399ボード
+        の項目がある：
+          - const：ロックチップ,RK3399-オレンジピ
+          - コンスト：ロックチップ,RK3399
+
+      - 説明Phytec phyCORE-RK3288 高速開発キット
+        の項目がある：
+          - コンスト：ファイテック,RK3288-Pcm-947
+          - const: ファイテック,RK3288-PHYCORE-SOM
+          - コンスト：ロックチップ,RK3288
+
+      - 説明Pine64 PinebookPro
+        の項目がある：
+          - const: 松64,松本プロ
+          - コンスト：ロックチップ,RK3399
+
+      - 説明松64松注
+        の項目がある：
+          - を列挙する：
+              - pine64,ピネノート-v1.1
+              - pine64,ピネノート-v1.2
+          - const：pine64,ピネノート
+          - コンスト：ロックチップ、RK3566
+
+      - 説明Pine64 PinePhonePro
+        の項目がある：
+          - const：パイン64,パインフォン・プロ
+          - コンスト：ロックチップ,RK3399
+
+      - 説明Pine64 Rock64
+        の項目がある：
+          - const: 松64,岩64
+          - コンスト：ロックチップ、RK3328
+
+      - 説明Pine64 RockPro64
+        の項目がある：
+          - を列挙する：
+              - pine64、rockpro64-v2.1
+              - pine64,ロックプロ64-v2.0
+          - const：松64,ロックプロ64
+          - コンスト：ロックチップ,RK3399
+
+      - 説明Pine64 Quartz64 Model A/B
+        の項目がある：
+          - を列挙する：
+              - 松64,石英64-a
+              - 松64,石英64-b
+          - コンスト：ロックチップ、RK3566
+
+      - 説明Pine64 SoQuartz SoM
+        の項目がある：
+          - を列挙する：
+              - 松64,石英-CM4O
+          - const: 松64,ソークォーツ
+          - コンスト：ロックチップ、RK3566
+
+      - 説明ラドクサ・ロック
+        の項目がある：
+          - コンスト：ラドクサ、ロック
+          - コンスト：ロックチップ,RK3188
+
+      - 説明Radxa ROCK Pi 4A/A+/B/B+/C
+        の項目がある：
+          - を列挙する：
+              - ラドクサ、ロックピ4a
+              - ラドクサ、ロックピ4Aプラス
+              - ラドクサ、ロックピ4B
+              - ラドクサ、ロックピ4Bプラス
+              - ラドクサ、ロックピ4c
+          - コンスト：ラドクサ、ロックピ4
+          - コンスト：ロックチップ,RK3399
+
+      - 説明ラドクサ・ロック 4C+
+        の項目がある：
+          - コンスト：ラドクサ、ロック4Cプラス
+          - コンスト：ロックチップ,RK3399
+
+      - 説明Radxa ROCK Pi E
+        の項目がある：
+          - コンスト：ラドクサ、ロックピ・イー
+          - コンスト：ロックチップ、RK3328
+
+      - 説明Radxa ROCK Pi N8
+        の項目がある：
+          - コンスト：ラドクサ、ロックピ-N8
+          - コンスト：VAMRS,RK3288-VMRC-SOM
+          - コンスト：ロックチップ,RK3288
+
+      - 説明Radxa ROCK Pi N10
+        の項目がある：
+          - コンスト：ラドクサ、ロックピ-N10
+          - コンスト: VAMRS,RK3399 PRO-VMARC-SOM
+          - コンスト：ロックチップ,RK3399Pro
+
+      - 説明ラドシャROCK Pi S
+        の項目がある：
+          - コンスト：ラドクサ、ロックピス
+          - コンスト：ロックチップ、RK3308
+
+      - 説明ラドクサ・ロック2・スクエア
+        の項目がある：
+          - const: ラドクサ,ロック2スクエア
+          - コンスト：ロックチップ,RK3288
+
+      - 説明ラドクサROCK3モデルA
+        の項目がある：
+          - コンスト：ラドクサ、ロック3a
+          - コンスト：ロックチップ、RK3568
+
+      - 説明リコーマジック MK808 v1
+        の項目がある：
+          - const: リコマジック,mk808
+          - コンスト：ロックチップ、RK3066A
+
+      - 説明ロックチップ・カイリン
+        の項目がある：
+          - コンスト：ロックチップ、RK3036-カイリン
+          - コンスト：ロックチップ、RK3036
+
+      - 説明Rockchip PX3 評価ボード
+        の項目がある：
+          - const：ロックチップ、px3-evb
+          - コンスト：ロックチップ、PX3
+          - コンスト：ロックチップ,RK3188
+
+      - 説明Rockchip PX30評価ボード
+        の項目がある：
+          - コンスト：ロックチップ、PX30-EVB
+          - コンスト：ロックチップ、PX30
+
+      - 説明Rockchip PX5評価ボード
+        の項目がある：
+          - コンスト：ロックチップ、PX5-EVB
+          - コンスト：ロックチップ,PX5
+          - コンスト：ロックチップ、RK3368
+
+      - 説明ロックチップR88
+        の項目がある：
+          - const：ロックチップ,R88
+          - コンスト：ロックチップ、RK3368
+
+      - 説明Rockchip RK3036評価ボード
+        の項目がある：
+          - コンスト：ロックチップ、RK3036-EVB
+          - コンスト：ロックチップ、RK3036
+
+      - 説明Rockchip RK3228評価ボード
+        の項目がある：
+          - const：ロックチップ、RK3228-EVB
+          - コンスト：ロックチップ、RK3228
+
+      - 説明Rockchip RK3229評価ボード
+        の項目がある：
+          - コンスト：ロックチップ、RK3229-EVB
+          - コンスト：ロックチップ,RK3229
+
+      - 説明Rockchip RK3288 評価ボード
+        の項目がある：
+          - を列挙する：
+              - ロックチップ、RK3288-EVB-ACT8846
+              - ロックチップ、RK3288-EVB-RK808
+          - コンスト：ロックチップ,RK3288
+
+      - 説明Rockchip RK3308 評価ボード
+        の項目がある：
+          - const：ロックチップ、RK3308-EVB
+          - コンスト：ロックチップ、RK3308
+
+      - 説明Rockchip RK3328 評価ボード
+        の項目がある：
+          - const：ロックチップ、RK3328-EVB
+          - コンスト：ロックチップ、RK3328
+
+      - 説明Rockchip RK3368 評価ボード (act8846 pmic)
+        の項目がある：
+          - const：ロックチップ、RK3368-EVB-ACT8846
+          - コンスト：ロックチップ、RK3368
+
+      - 説明Rockchip RK3399評価ボード
+        の項目がある：
+          - const：ロックチップ,RK3399-EVB
+          - コンスト：ロックチップ,RK3399
+
+      - 説明ロックチップRK3399サファイア・スタンドアロン
+        の項目がある：
+          - const：ロックチップ,RK3399-サファイア
+          - コンスト：ロックチップ,RK3399
+
+      - 説明ロックチップRK3399サファイアとエクスカベーター・ベースボード
+        の項目がある：
+          - const：ロックチップ,RK3399-サファイア・エクスカベーター
+          - コンスト：ロックチップ,RK3399
+
+      - 説明ロックチップRV1108評価ボード
+        の項目がある：
+          - コンスト：ロックチップ、RV1108-EVB
+          - コンスト：ロックチップ,RV1108
+
+      - 説明テオブロマ・システムズRK3368-uQ7と海口ベースボード
+        の項目がある：
+          - コンスト：TSD,RK3368-獅子海口
+          - コンスト：ロックチップ、RK3368
+
+      - 説明テオブロマ・システムズRK3399-Q7と海口ベースボード
+        の項目がある：
+          - Const：TSD、RK3399-Puma-Haikou
+          - コンスト：ロックチップ,RK3399
+
+      - 説明トロン スマート オリオン R68 メタ
+        の項目がある：
+          - const：トロンスマート、オリオン-R68-メタ
+          - コンスト：ロックチップ、RK3368
+
+      - 説明Zkmagic A95X Z2
+        の項目がある：
+          - const：Zマジック,A95X-Z2
+          - コンスト：ロックチップ、RK3318
+
+      - 説明Rockchip RK3568 評価ボード
+        の項目がある：
+          - const：ロックチップ、RK3568-EVB1-V10
+          - コンスト：ロックチップ、RK3568
+
+      - 説明Rockchip RK3568 Banana Pi R2 Pro
+        の項目がある：
+          - const：ロックチップ、RK3568-BPI-R2Pro
+          - コンスト：ロックチップ、RK3568
+
+additionalProperties: true
+
+...
